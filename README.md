@@ -1,58 +1,52 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Turfy
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Turfy connects every indoor cricket & football turf in the city on one platform: players discover venues, register for tournaments, follow city-wide leagues, and pay entry fees with bKash — while venue owners list their turf, run tournaments, and field a team in inter-venue leagues.
 
-## About Laravel
+## Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Laravel 13 + Inertia.js + Vue 3 + Tailwind CSS (Breeze starter kit), SQLite for local development.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Venues** — indoor turfs list themselves (pending admin approval), with city/sport filters, ratings & reviews.
+- **Teams** — every approved venue automatically gets a "venue team" that represents it in inter-venue competition; players can also form their own open teams.
+- **Tournaments** — venue owners or admins create knockout/round-robin tournaments, free or paid. Registration is per-team, gated by sport and capacity.
+- **Payments** — paid tournament registration goes through a bKash Tokenized Checkout flow. The gateway is currently a swappable stub (`App\Services\Payments\BkashService`) that mimics the real create/execute lifecycle — see [Going live with real bKash](#going-live-with-real-bkash) below.
+- **Leagues** — admins pick N venue teams and generate a full home-and-away round-robin schedule in one click (`FixtureGeneratorService`), La Liga/Premier League style. Standings are computed live from match results (`StandingsService`).
+- **Roles** — `admin`, `venue_owner`, `player`, enforced via policies and route middleware (`role:venue_owner,admin`).
+- **Admin panel** — venue approvals, league management (add/remove teams, generate fixtures, enter results), payments ledger, user role management.
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Getting started
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate --seed
+npm run build   # or `npm run dev` for hot reload
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### Demo accounts (from the seeder, password: `password` for all)
 
-## Contributing
+| Role | Email |
+|---|---|
+| Admin | `admin@turfy.app` |
+| Venue owner | `rafiq.hasan@turfy.app` (Dhanmondi Arena), `nasir.uddin@turfy.app` (Mirpur Sports Hub), etc. |
+| Player | `arif.chowdhury@example.com`, and 13 others — see `database/seeders/DatabaseSeeder.php` |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+The seeder creates 6 venues (one pending, for testing the approval flow), a paid and a free tournament with real registrations and payments, and a 5-team football league with a generated double round-robin schedule and some results already played out.
 
-## Code of Conduct
+## Going live with real bKash
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+`config/bkash.php` holds the merchant credentials (`BKASH_APP_KEY`, `BKASH_APP_SECRET`, `BKASH_USERNAME`, `BKASH_PASSWORD`, `BKASH_BASE_URL`) as env-driven placeholders. To go live:
 
-## Security Vulnerabilities
+1. Get Tokenized Checkout credentials from bKash's merchant portal.
+2. Implement `App\Services\Payments\BkashService::createPayment()` / `executePayment()` against bKash's real Grant Token → Create Payment → Execute Payment flow (currently mocked).
+3. Nothing else changes — `PaymentService` and every controller only depend on the `PaymentGatewayContract` interface.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Roadmap ideas
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Beyond this build: slot-based venue booking for regular (non-tournament) play, push/SMS notifications for match reminders, player stat profiles, a subscription tier for venues wanting featured placement, and live score updates via websockets.

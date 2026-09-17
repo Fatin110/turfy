@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'name', 'slug', 'description', 'sport', 'season', 'city', 'start_date', 'end_date',
+    'name', 'slug', 'description', 'sport', 'season', 'city', 'created_by', 'start_date', 'end_date',
     'points_win', 'points_draw', 'points_loss', 'double_round_robin', 'status',
 ])]
 class League extends Model

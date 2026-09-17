@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'name', 'slug', 'description', 'rules', 'sport', 'format', 'venue_id',
+    'name', 'slug', 'description', 'rules', 'sport', 'format', 'venue_id', 'created_by',
     'banner_image', 'city', 'start_date', 'end_date', 'registration_deadline',
     'max_teams', 'entry_fee', 'prize_info', 'status',
 ])]

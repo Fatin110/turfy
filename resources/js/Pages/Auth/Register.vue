@@ -11,6 +11,7 @@ const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
+    role: 'player',
 });
 
 const submit = () => {
@@ -54,6 +55,27 @@ const submit = () => {
                 />
 
                 <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel value="I am signing up as a..." />
+                <div class="mt-2 grid grid-cols-2 gap-3">
+                    <label
+                        class="flex cursor-pointer items-center justify-center rounded-md border px-3 py-2 text-sm font-medium"
+                        :class="form.role === 'player' ? 'border-emerald-600 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300'"
+                    >
+                        <input type="radio" value="player" v-model="form.role" class="sr-only" />
+                        Player
+                    </label>
+                    <label
+                        class="flex cursor-pointer items-center justify-center rounded-md border px-3 py-2 text-sm font-medium"
+                        :class="form.role === 'venue_owner' ? 'border-emerald-600 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300'"
+                    >
+                        <input type="radio" value="venue_owner" v-model="form.role" class="sr-only" />
+                        Venue Owner
+                    </label>
+                </div>
+                <InputError class="mt-2" :message="form.errors.role" />
             </div>
 
             <div class="mt-4">

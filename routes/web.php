@@ -75,14 +75,14 @@ Route::middleware('auth')->group(function () {
     // Admin
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/venues', [AdminVenueController::class, 'index'])->name('venues.index');
-        Route::patch('/venues/{venue}/approve', [AdminVenueController::class, 'approve'])->name('venues.approve');
-        Route::patch('/venues/{venue}/reject', [AdminVenueController::class, 'reject'])->name('venues.reject');
+        Route::patch('/venues/{venue:id}/approve', [AdminVenueController::class, 'approve'])->name('venues.approve');
+        Route::patch('/venues/{venue:id}/reject', [AdminVenueController::class, 'reject'])->name('venues.reject');
 
         Route::get('/leagues/create', [AdminLeagueController::class, 'create'])->name('leagues.create');
         Route::post('/leagues', [AdminLeagueController::class, 'store'])->name('leagues.store');
         Route::get('/leagues/{league}/manage', [AdminLeagueController::class, 'manage'])->name('leagues.manage');
         Route::post('/leagues/{league}/teams', [AdminLeagueController::class, 'addTeam'])->name('leagues.teams.add');
-        Route::delete('/leagues/{league}/teams/{team}', [AdminLeagueController::class, 'removeTeam'])->name('leagues.teams.remove');
+        Route::delete('/leagues/{league}/teams/{team:id}', [AdminLeagueController::class, 'removeTeam'])->name('leagues.teams.remove');
         Route::post('/leagues/{league}/fixtures', [AdminLeagueController::class, 'generateFixtures'])->name('leagues.fixtures.generate');
         Route::patch('/leagues/{league}/status', [AdminLeagueController::class, 'updateStatus'])->name('leagues.status');
 
